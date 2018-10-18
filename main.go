@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +10,28 @@ import (
 
 	"github.com/urfave/cli"
 )
+
+//Config 配置
+type Config struct {
+	Images []Image
+}
+
+//Image 镜像
+type Image struct {
+	Respository string
+	Tag         string
+}
+
+func parseConf(path string) (*Config, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var conf Config
+
+	return &conf, json.NewDecoder(f).Decode(&conf)
+}
 
 func execShellCmd(cmd string) (string, error) {
 	fmt.Printf("cmd: %s\n", cmd)
@@ -125,11 +148,54 @@ func tagToTag(path string, which int) string {
 }
 
 func main() {
+	var configPath string
+	var config *Config
 	app := cli.NewApp()
 
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "c, config",
+			Value:       "",
+			Usage:       "waiting pull image list",
+			Destination: &configPath,
+		},
+	}
+
+	app.Commands = []cli.Command{
+		{
+			Name:    "pull",
+			Aliases: []string{"p"},
+			Usage:   "pull image and turn tag",
+			Action: func(c *cli.Context) error {
+				fmt.Println("pull image and turn tag")
+				return nil
+			},
+		},
+		{
+			Name:    "search",
+			Aliases: []string{"s"},
+			Usage:   "search image",
+			Action: func(c *cli.Context) error {
+				fmt.Println("search image")
+				return nil
+			},
+		},
+	}
+
 	app.Action = func(c *cli.Context) error {
-		doSomething(c.Args().Get(0))
-		return nil
+		var err error
+		if configPath == "" {
+			fmt.Println("please config image list")
+		}
+		config, err = parseConf(configPath)
+		// type Image struct {
+		// 	Respository string
+		// 	Tag         string
+		// }
+		for k := range config.Images {
+			doSomething(config.Images[k].Respository + ":" + config.Images[k].Tag)
+		}
+		return err
 	}
 
 	err := app.Run(os.Args)
