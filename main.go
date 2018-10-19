@@ -72,7 +72,7 @@ var (
 	registryList = map[string]func(string) string{"ali": pathToPathAli, "anjia": pathToPathAnJia}
 )
 
-func pullSomething(whichImage string) {
+func pullSomething(whichImage string) bool {
 	// var status = map[string]string{
 	// 	"126": "命令不可执行",
 	// 	"127": "没找到命令",
@@ -83,14 +83,17 @@ func pullSomething(whichImage string) {
 	//转换路径，下载
 	var err error
 	var turned string
+	result := true
 	for k, v := range registryList {
 		turned = v(whichImage)
 		err = pullAndTurnTag(turned, whichImage)
 		if err == nil {
 			fmt.Printf("From registry %s Get %s\n", k, whichImage)
+			result = false
 			break
 		}
 	}
+	return result
 	//fmt.Println(result, status)
 }
 
@@ -203,12 +206,22 @@ func main() {
 		// 	Respository string
 		// 	Tag         string
 		// }
+		var success []string
+		var failure []string
+
 		for k := range config.Images {
 			if config.Images[k].Tag == "" {
 				config.Images[k].Tag = "latest"
 			}
-			pullSomething(config.Images[k].Respository + ":" + config.Images[k].Tag)
+			image := config.Images[k].Respository + ":" + config.Images[k].Tag
+			result := pullSomething(image)
+			if result {
+				success = append(success, image)
+			} else {
+				failure = append(failure, image)
+			}
 		}
+		fmt.Printf("success(%d): %v, failure(%d): %v\n", len(success), success, len(failure), failure)
 		return err
 	}
 
