@@ -57,6 +57,14 @@ func pullAndTurnTag(turned, whichImage string) error {
 	if err != nil {
 		return err
 	}
+
+	//删除
+	cmd = fmt.Sprintf("%s %s %s", cmdPath, "rmi", turned)
+	_, err = execShellCmd(cmd)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -64,7 +72,7 @@ var (
 	registryList = map[string]func(string) string{"ali": pathToPathAli, "anjia": pathToPathAnJia}
 )
 
-func doSomething(whichImage string) {
+func pullSomething(whichImage string) {
 	// var status = map[string]string{
 	// 	"126": "命令不可执行",
 	// 	"127": "没找到命令",
@@ -124,7 +132,10 @@ func pathToPathAli(path string) string {
 	switch pathSplit[0] {
 	case "gcr.io":
 		turned = "registry.cn-hangzhou.aliyuncs.com" + "/" + pathSplit[1] + "/" + pathSplit[2]
+	case "k8s.gcr.io":
+		turned = "registry.cn-hangzhou.aliyuncs.com" + "/" + "google-containers" + "/" + pathSplit[1]
 	default:
+		turned = "registry.cn-hangzhou.aliyuncs.com" + "/" + "google-containers" + "/" + pathSplit[len(pathSplit)-1]
 		fmt.Printf("ali not reachable\n")
 	}
 
@@ -193,7 +204,10 @@ func main() {
 		// 	Tag         string
 		// }
 		for k := range config.Images {
-			doSomething(config.Images[k].Respository + ":" + config.Images[k].Tag)
+			if config.Images[k].Tag == "" {
+				config.Images[k].Tag = "latest"
+			}
+			pullSomething(config.Images[k].Respository + ":" + config.Images[k].Tag)
 		}
 		return err
 	}
