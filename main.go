@@ -98,7 +98,7 @@ func pullSomething(whichImage string) bool {
 }
 
 /*
-docker pull anjia0532/google-containers.federation-controller-manager-arm64:v1.3.1-beta.1
+docker pull gcr.azk8s.cn/google-containers/federation-controller-manager-arm64:v1.3.1-beta.1
 # eq
 docker pull gcr.io/google-containers/federation-controller-manager-arm64:v1.3.1-beta.1
 
@@ -113,9 +113,9 @@ func pathToPathAnJia(path string) string {
 
 	switch pathSplit[0] {
 	case "gcr.io":
-		turned = "anjia0532" + "/" + pathSplit[1] + "." + pathSplit[2]
+		turned = "gcr.azk8s.cn" + "/" + pathSplit[1] + "." + pathSplit[2]
 	case "k8s.gcr.io":
-		turned = "anjia0532" + "/" + "google-containers" + "." + pathSplit[1]
+		turned = "gcr.azk8s.cn" + "/" + "google-containers" + "." + pathSplit[1]
 	}
 
 	return turned
