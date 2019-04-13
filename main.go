@@ -113,9 +113,9 @@ func pathToPathAnJia(path string) string {
 
 	switch pathSplit[0] {
 	case "gcr.io":
-		turned = "gcr.azk8s.cn" + "/" + pathSplit[1] + "." + pathSplit[2]
+		turned = "gcr.azk8s.cn" + "/" + pathSplit[1] + "/" + pathSplit[2]
 	case "k8s.gcr.io":
-		turned = "gcr.azk8s.cn" + "/" + "google-containers" + "." + pathSplit[1]
+		turned = "gcr.azk8s.cn" + "/" + "google-containers" + "/" + pathSplit[1]
 	}
 
 	return turned
