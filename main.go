@@ -221,7 +221,7 @@ func main() {
 				failure = append(failure, image)
 			}
 		}
-		fmt.Printf("success(%d): %v, failure(%d): %v\n", len(success), success, len(failure), failure)
+		fmt.Printf("failure(%d): %v, success(%d): %v\n", len(success), success, len(failure), failure)
 		return err
 	}
 
